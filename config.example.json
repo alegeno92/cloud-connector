@@ -1,0 +1,11 @@
+{
+  "AIO": {
+    "username": "",
+    "key" : ""
+  },
+  "local": {
+    "host": "localhost",
+    "port": 1883,
+    "client_id": "cloud_connector"
+  }
+}

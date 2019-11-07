@@ -1,0 +1,62 @@
+from Adafruit_IO import Client, RequestError, Feed, ThrottlingError
+import json
+
+from local_client import LocalClient
+
+CONFIG_FILE = './config.json'
+
+
+def generate_feeds(aio, feeds_name):
+    feeds = dict()
+    for name in feeds_name:
+        print('[AIO_REMOTE] generating ' + name + ' feed')
+        try:
+            feed = aio.feeds(name)
+        except RequestError:
+            feed = Feed(name=name)
+            feed = aio.create_feed(feed)
+        feeds[name] = feed
+    return feeds
+
+
+def read_configuration():
+    with open(CONFIG_FILE) as json_data_file:
+        data = json.load(json_data_file)
+        print('[MAIN] reading configuration ok')
+        return data
+
+
+def main(configuration):
+    aio = Client(configuration['AIO']['username'], configuration['AIO']['key'])
+    feeds = generate_feeds(aio, ['memory', 'loads', 'storage', 'people'])
+    local_client = LocalClient(client_id=configuration['local']['client_id'],
+                               host=configuration['local']['host'],
+                               port=configuration['local']['port'])
+    local_client.start()
+
+    while True:
+        message = local_client.message_queue.get()
+        if message is None:
+            continue
+        topic = message.topic
+        payload = message.payload
+        json_payload = json.loads(payload)
+        print('[MAIN] ' + str(topic) + ' ' + str(json_payload[topic]))
+        feed = feeds[topic]
+        try:
+            if topic == 'memory':
+                aio.send_data(feed.key, json_payload[topic]['free'])
+            elif topic == 'storage':
+                aio.send_data(feed.key, json_payload[topic]['free'])
+            elif topic == 'loads':
+                aio.send_data(feed.key, json_payload[topic]['free'])
+            elif topic == 'people':
+                aio.send_data(feed.key, json_payload[topic]['number'])
+        except ThrottlingError as e:
+            print('[MAIN] Skipping value. Limit reached.')
+            continue
+
+
+if __name__ == "__main__":
+    config = read_configuration()
+    main(config)
