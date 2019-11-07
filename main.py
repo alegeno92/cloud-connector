@@ -1,9 +1,7 @@
-from Adafruit_IO import Client, RequestError, Feed, ThrottlingError
 import json
-
+import sys
+from Adafruit_IO import Client, RequestError, Feed, ThrottlingError
 from local_client import LocalClient
-
-CONFIG_FILE = './config.json'
 
 
 def generate_feeds(aio, feeds_name):
@@ -19,8 +17,9 @@ def generate_feeds(aio, feeds_name):
     return feeds
 
 
-def read_configuration():
-    with open(CONFIG_FILE) as json_data_file:
+def read_configuration(path):
+    print(path)
+    with open(path) as json_data_file:
         data = json.load(json_data_file)
         print('[MAIN] reading configuration ok')
         return data
@@ -58,5 +57,11 @@ def main(configuration):
 
 
 if __name__ == "__main__":
-    config = read_configuration()
+    config_file = None
+    if len(sys.argv) < 2:
+        print("[MAIN] Usage: python3 main.py [config-file-path.json]")
+        exit(1)
+    else:
+        config_file = sys.argv[1]
+    config = read_configuration(config_file)
     main(config)

@@ -1,8 +1,7 @@
+import paho.mqtt.client as mqtt
 import threading
 import time
 import queue
-
-import paho.mqtt.client as mqtt
 
 
 class LocalClient(threading.Thread):
