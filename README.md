@@ -1,4 +1,4 @@
-### Cloud Connector
+# Cloud Connector
 Simple cloud connector to send data to Adafruit IO.
 
 ## Docker
