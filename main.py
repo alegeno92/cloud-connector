@@ -27,12 +27,13 @@ def read_configuration(path):
 
 def main(configuration):
     aio = Client(configuration['AIO']['username'], configuration['AIO']['key'])
-    feeds = generate_feeds(aio, ['memory', 'loads', 'storage', 'people'])
+    topic_data_mapper = {feed['topic']: feed['data'] for feed in configuration['feeds']}
+    feeds = generate_feeds(aio, topic_data_mapper.keys())
     local_client = LocalClient(client_id=configuration['local']['client_id'],
                                host=configuration['local']['host'],
-                               port=configuration['local']['port'])
+                               port=configuration['local']['port'],
+                               subscription_paths=topic_data_mapper.keys())
     local_client.start()
-
     while True:
         message = local_client.message_queue.get()
         if message is None:
@@ -40,17 +41,11 @@ def main(configuration):
         topic = message.topic
         payload = message.payload
         json_payload = json.loads(payload)
-        print('[MAIN] ' + str(topic) + ' ' + str(json_payload[topic]))
+        print('[MAIN] received ' + str(topic) + ' ' + str(json_payload[topic]))
         feed = feeds[topic]
         try:
-            if topic == 'memory':
-                aio.send_data(feed.key, json_payload[topic]['free'])
-            elif topic == 'storage':
-                aio.send_data(feed.key, json_payload[topic]['free'])
-            elif topic == 'loads':
-                aio.send_data(feed.key, json_payload[topic]['free'])
-            elif topic == 'people':
-                aio.send_data(feed.key, json_payload[topic]['number'])
+            aio.send_data(feed.key, json_payload[topic][topic_data_mapper[topic]])
+            print('[AIO_REMOTE] send ' + str(topic) + ': ' + str(json_payload[topic][topic_data_mapper[topic]]))
         except ThrottlingError as e:
             print('[MAIN] Skipping value. Limit reached.')
             continue

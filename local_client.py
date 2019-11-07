@@ -6,12 +6,12 @@ import queue
 
 class LocalClient(threading.Thread):
 
-    def __init__(self, client_id='cloud_connector', host='localhost', port=1883):
+    def __init__(self, client_id='cloud_connector', host='localhost', port=1883, subscription_paths=None):
         threading.Thread.__init__(self)
         self.host = host
         self.port = port
         self.client_id = client_id
-        self.subscription_paths = ['memory', 'loads', 'storage', 'people']
+        self.subscription_paths = subscription_paths
         self.message_queue = queue.Queue()
         self.client = mqtt.Client(client_id=self.client_id)
 

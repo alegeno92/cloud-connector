@@ -1,11 +1,29 @@
 {
   "AIO": {
     "username": "",
-    "key" : ""
+    "key": ""
   },
   "local": {
     "host": "localhost",
     "port": 1883,
     "client_id": "cloud_connector"
-  }
+  },
+  "feeds": [
+    {
+      "topic": "loads",
+      "data": "free"
+    },
+    {
+      "topic": "memory",
+      "data": "free"
+    },
+    {
+      "topic": "people",
+      "data": "number"
+    },
+    {
+      "topic": "storage",
+      "data": "free"
+    }
+  ]
 }
