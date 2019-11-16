@@ -41,11 +41,14 @@ def main(configuration):
         topic = message.topic
         payload = message.payload
         json_payload = json.loads(payload)
-        print('[MAIN] received ' + str(topic) + ' ' + str(json_payload[topic]))
+        print('[MAIN] received ' + str(topic) + ' ' + str(json_payload))
         feed = feeds[topic]
         try:
-            aio.send_data(feed.key, json_payload[topic][topic_data_mapper[topic]])
-            print('[AIO_REMOTE] send ' + str(topic) + ': ' + str(json_payload[topic][topic_data_mapper[topic]]))
+            if topic in topic_data_mapper.keys():
+                aio.send_data(feed.key, json_payload['data'][topic_data_mapper[topic]])
+                print('[AIO_REMOTE] send ' + str(topic) + ': ' + str(json_payload['data'][topic_data_mapper[topic]]))
+            else:
+                print('[AIO_REMOTE] discard message ' + str(topic) + str(json_payload))
         except ThrottlingError as e:
             print('[MAIN] Skipping value. Limit reached.')
             continue
