@@ -41,7 +41,8 @@ def main(configuration):
         topic = message.topic
         payload = message.payload
         json_payload = json.loads(payload)
-        print('[MAIN] received ' + str(topic) + ' ' + str(json_payload))
+        print('[MAIN] received ' + str(topic) + ' ' + str(json_payloa
+        d))
         feed = feeds[topic]
         try:
             if topic in topic_data_mapper.keys():
