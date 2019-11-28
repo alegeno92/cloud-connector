@@ -1,14 +1,6 @@
-FROM python:3.7-alpine as base
-
-FROM base as builder
-RUN mkdir /install
-WORKDIR /install
-COPY requirements.txt /requirements.txt
-RUN pip install --install-option="--prefix=/install" -r /requirements.txt
-
-FROM base
-COPY --from=builder /install /usr/local
-COPY *.py /app/
+FROM python:3-alpine
+RUN pip install --no-cache-dir paho-mqtt adafruit-io
+RUN mkdir /app
 WORKDIR /app
-
-CMD ["python", "./main.py" , "/config/config.json"]
+COPY *.py /app/
+CMD ["python", "-u", "/app/main.py" , "/config/config.json"]

@@ -3,6 +3,7 @@
     "username": "",
     "key": ""
   },
+  "mock_client": true,
   "local": {
     "host": "localhost",
     "port": 1883,
