@@ -12,19 +12,19 @@
   "feeds": [
     {
       "topic": "loads",
-      "data": "free"
+      "data": "value"
     },
     {
       "topic": "memory",
-      "data": "free"
+      "data": "value"
     },
     {
       "topic": "people",
-      "data": "number"
+      "data": "value"
     },
     {
       "topic": "storage",
-      "data": "free"
+      "data": "value"
     }
   ]
 }
