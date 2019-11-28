@@ -2,6 +2,7 @@ import json
 import sys
 from Adafruit_IO import Client, RequestError, Feed, ThrottlingError
 from local_client import LocalClient
+from mock_local_client import MockLocalClient
 
 
 def generate_feeds(aio, feeds_name):
@@ -29,13 +30,17 @@ def main(configuration):
     aio = Client(configuration['AIO']['username'], configuration['AIO']['key'])
     topic_data_mapper = {feed['topic']: feed['data'] for feed in configuration['feeds']}
     feeds = generate_feeds(aio, topic_data_mapper.keys())
-    local_client = LocalClient(client_id=configuration['local']['client_id'],
-                               host=configuration['local']['host'],
-                               port=configuration['local']['port'],
-                               subscription_paths=topic_data_mapper.keys())
+    if configuration['mock_client']:
+        local_client = MockLocalClient()
+    else:
+        local_client = LocalClient(client_id=configuration['local']['client_id'],
+                                   host=configuration['local']['host'],
+                                   port=configuration['local']['port'],
+                                   subscription_paths=topic_data_mapper.keys())
     local_client.start()
     while True:
         message = local_client.message_queue.get()
+
         if message is None:
             continue
         topic = message.topic
